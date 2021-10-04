@@ -3,6 +3,7 @@
 void Select::Init()
 {
 	select = menu;
+	cursor = ready;
 
 	Pos = { 0,150 };
 
@@ -12,8 +13,12 @@ void Select::Init()
 	m_TReady = GameResourceFactory.GetTexture("Date/Textures/Ready.png");
 	rReady = {0,256,512,256};
 
-	m_TBel = GameResourceFactory.GetTexture("Date/Textures/装備.png");
+	m_TBel = GameResourceFactory.GetTexture("Date/Textures/belonging.png");
 	rBel = {0,256,512,256};
+
+	m_TCor = GameResourceFactory.GetTexture("Date/Textures/cursor.png");
+	rCor = { 0,64,64,64 };
+	cPosY = -100;
 
 	m_modelWork.SetModel(GameResourceFactory.GetModelData("Date/Models/Room/Room.gltf"));
 }
@@ -24,11 +29,11 @@ void Select::Update()
 	{
 	case menu:
 
-
+		UpdateMenu();
 		
 		break;
 
-	case level:
+	case ready:
 		LevelSelect();
 		break;
 
@@ -47,29 +52,22 @@ void Select::Update()
 	default:
 		break;
 	}
-	
-
-	if (GetAsyncKeyState(VK_LBUTTON))
-	{
-		if (!MouseToTexture(m_TNumber, Pos, nowPos))
-		{
-			GameInstance.RequestChangeScene("Game");
-		}
-	}
 }
 
 void Select::Draw2()
 {
 	Math::Rectangle Rect = { 0,128,512,128 };
-	switch (menu)
+	switch (select)
 	{
 	case menu:
+		SHADER->m_spriteShader.DrawTex(m_TCor.get(), -600, cPosY, 64, 64, &rCor);
 
 		SHADER->m_spriteShader.DrawTex(m_TReady.get(), -400, -100, 256, 128, &rReady);
 
 		SHADER->m_spriteShader.DrawTex(m_TBel.get(), -400, -250, 256, 128, &rBel);
 		break;
-	case level:
+
+	case ready:
 		UpdateRect(lev);
 		SHADER->m_spriteShader.DrawTex(m_TNumber.get(), (int)Pos.x, (int)Pos.y, 64, 128, &rect);
 
@@ -149,6 +147,65 @@ void Select::LevelSelect()
 	else
 	{
 		flg = false;
+	}
+
+	if (GetAsyncKeyState(VK_LBUTTON))
+	{
+		GameInstance.RequestChangeScene("Game");
+	}
+}
+
+void Select::UpdateMenu()
+{
+	switch (cursor)
+	{
+	case ready:
+		cPosY = -100;
+		if (GetAsyncKeyState(VK_RBUTTON))
+		{
+			if (!flg)
+			{
+				select = ready;
+			}
+			flg = true;
+		}
+		else
+		{
+			flg = false;
+		}
+
+		if (GetAsyncKeyState(VK_DOWN) && GetAsyncKeyState(VK_UP))
+		{
+			if (!flg)
+			{
+				cursor = belonging;
+			}
+			flg = true;
+		}
+		else
+		{
+			flg = false;
+		}
+		
+		break;
+
+	case belonging:
+		cPosY = -250;
+		if (GetAsyncKeyState(VK_UP) && GetAsyncKeyState(VK_DOWN))
+		{
+			if (!flg)
+			{
+				cursor = ready;
+			}
+			flg = true;
+		}
+		else
+		{
+			flg = false;
+		}
+		break;
+	default:
+		break;
 	}
 }
 

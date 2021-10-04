@@ -4,7 +4,7 @@
 enum Menu
 {
 	menu,
-	level,
+	ready,
 	belonging,//装備
 	equipment,//所持品
 	upgrade,//強化
@@ -28,9 +28,11 @@ public:
 	bool MouseToTexture(std::shared_ptr<KdTexture> Tex, Math::Vector2 Pos,Math::Vector2 Mouse);
 
 	void LevelSelect();
+	void UpdateMenu();
 
 private:
 	Menu select;
+	Menu cursor;
 
 	void Release();
 
@@ -45,11 +47,17 @@ private:
 	std::shared_ptr<KdTexture> m_TBel;
 	Math::Rectangle rBel;
 
+	std::shared_ptr<KdTexture> m_TCor;
+	Math::Rectangle rCor;
+	float cPosY;
+
 	int lev = 1;
 	bool flg = false;
 
 	Math::Vector2 nowPos;
 
 	Math::Rectangle rect;
+
+
 
 };
