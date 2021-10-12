@@ -1,5 +1,7 @@
 ﻿#include "Select.h"
 
+#include"../gameObject/player.h"
+
 void Select::Init()
 {
 	select = menu;
@@ -8,17 +10,27 @@ void Select::Init()
 	Pos = { 0,150 };
 
 	m_TNumber = GameResourceFactory.GetTexture("Date/Textures/number/num.png");
-	m_LTexture = GameResourceFactory.GetTexture("Date/Textures/LEVEL.png");
+	m_LTexture = GameResourceFactory.GetTexture("Date/Textures/text/LEVEL.png");
 
-	m_TReady = GameResourceFactory.GetTexture("Date/Textures/Ready.png");
+	m_TReady = GameResourceFactory.GetTexture("Date/Textures/select/Ready.png");
 	rReady = {0,256,512,256};
 
-	m_TBel = GameResourceFactory.GetTexture("Date/Textures/belonging.png");
+	m_TBel = GameResourceFactory.GetTexture("Date/Textures/select/belonging.png");
 	rBel = {0,256,512,256};
 
-	m_TCor = GameResourceFactory.GetTexture("Date/Textures/cursor.png");
+	m_TCor = GameResourceFactory.GetTexture("Date/Textures/select/cursor.png");
 	rCor = { 0,64,64,64 };
 	cPosY = -100;
+
+	m_TFrame = GameResourceFactory.GetTexture("Date/Textures/select/upgradeFrame.png");
+	rFrame = { 0,720,447,720 };
+
+	m_THom = GameResourceFactory.GetTexture("Date/Textures/text/homing.png");
+	rHom = { 0,112,447,112 };
+
+	m_TChange = GameResourceFactory.GetTexture("Date/Textures/select/change.png");
+
+	m_TUpgrade = GameResourceFactory.GetTexture("Date/Textures/select/upgrade.png");
 
 	m_modelWork.SetModel(GameResourceFactory.GetModelData("Date/Models/Room/Room.gltf"));
 }
@@ -28,9 +40,7 @@ void Select::Update()
 	switch (select)
 	{
 	case menu:
-
 		UpdateMenu();
-		
 		break;
 
 	case ready:
@@ -38,7 +48,7 @@ void Select::Update()
 		break;
 
 	case belonging:
-
+		UpdateBel();
 		break;
 
 	case equipment:
@@ -46,7 +56,7 @@ void Select::Update()
 		break;
 
 	case upgrade:
-
+		Upgrade();
 		break;
 
 	default:
@@ -70,18 +80,30 @@ void Select::Draw2()
 	case ready:
 		UpdateRect(lev);
 		SHADER->m_spriteShader.DrawTex(m_TNumber.get(), (int)Pos.x, (int)Pos.y, 64, 128, &rect);
-
 		
 		SHADER->m_spriteShader.DrawTex(m_LTexture.get(), 0, 250, 512, 128, &Rect);
 		break;
 
 	case belonging:
+		SHADER->m_spriteShader.DrawTex(m_TCor.get(), -600, cPosY, 64, 64, &rCor);
+
+		SHADER->m_spriteShader.DrawTex(m_TChange.get(), -400, -100, 256, 128, &rReady);
+
+		SHADER->m_spriteShader.DrawTex(m_TUpgrade.get(), -400, -250, 256, 128, &rBel);
+
+		SHADER->m_spriteShader.DrawTex(m_TFrame.get(), 300, 0, 447, 720, &rFrame);
 		break;
 
 	case equipment:
 		break;
 
 	case upgrade:
+		SHADER->m_spriteShader.DrawTex(m_TFrame.get(), 300, 0, 447, 720, &rFrame);
+
+		if (txt != "homing")
+		{
+			SHADER->m_spriteShader.DrawTex(m_THom.get(), 400, 250, 447, 112, &rHom);
+		}
 		break;
 
 	default:
@@ -128,85 +150,187 @@ void Select::LevelSelect()
 {
 	if (GetAsyncKeyState(VK_RIGHT))
 	{
-		if (!flg)
+		if (changeLevel)
 		{
 			lev++;
-			GameSystem::GetInstance().LevelSet(lev);
+			GameSystem::GetInstance().LevelSet(lev);	
 		}
-		flg = true;
+		changeLevel = false;
 	}
 	else if (GetAsyncKeyState(VK_LEFT))
 	{
-		if (!flg)
+		if (changeLevel)
 		{
 			lev--;
-			GameSystem::GetInstance().LevelSet(lev);
+			GameSystem::GetInstance().LevelSet(lev);	
 		}
-		flg = true;
+		changeLevel = false;
 	}
-	else
-	{
-		flg = false;
-	}
+	else { changeLevel = true; }
 
 	if (GetAsyncKeyState(VK_LBUTTON))
 	{
-		GameInstance.RequestChangeScene("Game");
+		if (flg) { GameInstance.RequestChangeScene("Game"); }
+
+		flg = false;
 	}
+	else { flg = true; }
+
+	if (GetAsyncKeyState(VK_RBUTTON))
+	{
+		if (flg)
+		{
+			select = menu;
+		}
+		flg = false;
+	}
+	else { flg = true; }
+
 }
 
 void Select::UpdateMenu()
 {
+
 	switch (cursor)
 	{
 	case ready:
 		cPosY = -100;
-		if (GetAsyncKeyState(VK_RBUTTON))
+		if (GetAsyncKeyState(VK_SPACE))
 		{
-			if (!flg)
-			{
+			if (flg)
+			{	
 				select = ready;
 			}
-			flg = true;
-		}
-		else
-		{
 			flg = false;
 		}
+		else { flg = true; }
 
-		if (GetAsyncKeyState(VK_DOWN) && GetAsyncKeyState(VK_UP))
+		if (GetAsyncKeyState(VK_DOWN))
 		{
-			if (!flg)
-			{
+			if (flg)
+			{	
 				cursor = belonging;
 			}
-			flg = true;
-		}
-		else
-		{
 			flg = false;
 		}
+		else { flg = true; }
 		
 		break;
 
 	case belonging:
 		cPosY = -250;
-		if (GetAsyncKeyState(VK_UP) && GetAsyncKeyState(VK_DOWN))
+
+		if (GetAsyncKeyState(VK_SPACE))
 		{
-			if (!flg)
+			if (flg)
+			{	
+				select = belonging;
+			}
+			flg = false;
+		}
+		else { flg = true; }
+
+		if (GetAsyncKeyState(VK_UP))
+		{
+			if (flg)
 			{
 				cursor = ready;
 			}
-			flg = true;
-		}
-		else
-		{
 			flg = false;
 		}
+		else { flg = true; }
 		break;
 	default:
 		break;
 	}
+}
+
+void Select::UpdateBel()
+{
+	switch (cursor)
+	{
+	case belonging:
+		cPosY = -100;
+		if (GetAsyncKeyState(VK_RBUTTON))
+		{
+			if (flg)
+			{
+				select = menu;
+			}
+			flg = false;
+		}
+		else { flg = true; }
+
+		if (GetAsyncKeyState(VK_DOWN))
+		{
+			if (flg)
+			{
+				cursor = upgrade;
+			}
+			flg = false;
+		}
+		else { flg = true; }
+		
+		break;
+
+	case upgrade:
+		cPosY = -250;
+		if (GetAsyncKeyState(VK_RBUTTON))
+		{
+			if (flg)
+			{
+				select = menu;
+			}
+			flg = false;
+		}
+		else { flg = true; }
+
+		if (GetAsyncKeyState(VK_UP))
+		{
+			if (flg)
+			{
+				cursor = belonging;
+			}
+			flg = false;
+		}
+		else { flg = true; }
+
+		if (GetAsyncKeyState(VK_SPACE))
+		{
+			if (flg)
+			{
+				select = upgrade;
+			}
+			flg = false;
+		}
+		else { flg = true; }
+		
+		break;
+	default:
+		break;
+	}
+}
+
+void Select::Upgrade()
+{
+	if (GetAsyncKeyState(VK_RBUTTON))
+	{
+		if (flg)
+		{
+			cursor = ready;
+			select = menu;
+		}
+		flg = false;
+	}
+	else { flg = true; }
+
+	if (GetAsyncKeyState(VK_LBUTTON))
+	{
+		GameInstance.GetInstance().SetBuild("homing");
+		txt = "homing";
+	}
+
+	
 }
 
 void Select::Release()

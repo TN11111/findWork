@@ -74,7 +74,7 @@ void arrow::UpdateCollsion()
 			std::shared_ptr<Effect2D> spEffect = std::make_shared<Effect2D>();
 
 			spEffect->SetTexture("Date/Textures/Explosion.png");
-			spEffect->ChangeTexture(3.0f,3.0f);
+			spEffect->ChangeTexture(0,6.0f,6.0f);
 
 			spEffect->SetAnimation(5, 5);
 
@@ -113,8 +113,6 @@ void arrow::UpdateRot()
 
 void arrow::RotByGuide()
 {
-	if (!m_isHit) { return; }
-
 	//weak_ptr　の先が無効かどうか
 	if (m_wpTarget.expired()) { return; }
 

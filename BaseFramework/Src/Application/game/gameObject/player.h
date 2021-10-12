@@ -33,6 +33,8 @@ public:
 		return GameObject::ClassID::ePlayer;
 	}
 
+	void SetBel(std::string tex) { m_nowBil = tex; }
+
 private:
 	void Release();
 
@@ -63,6 +65,10 @@ private:
 	float m_verticalMovement = 0.0f;
 
 	bool m_jumpFlg = false;
+
+	std::string m_nowBil = "";
+
+	bool isHoming = false;
 
 	//staticはインスタンスが複製されてもメモリを共有する
 

@@ -37,12 +37,11 @@ void GameSystem::Update()
 		SetCursorPos(FPSCamera::s_fixMousePos.x, FPSCamera::s_fixMousePos.y);
 	}
 
-	if (GetAsyncKeyState(VK_SPACE))
-	{
+	if (GetAsyncKeyState(VK_LBUTTON)){
 		if (!button)
 		{
 			button = true;
-			if (m_nowScene != "Game") { chenge = true; }
+			 chenge = true;
 		}
 	}
 	else
@@ -55,7 +54,6 @@ void GameSystem::Update()
 		if (chenge)
 		{
 			RequestChangeScene("Select");
-			chenge = false;
 		}
 	}
 
@@ -65,11 +63,10 @@ void GameSystem::Update()
 		{
 			pObject->Update();
 		}
-		if (chenge)
+
+		if (GetAsyncKeyState(VK_TAB))
 		{
-			RequestChangeScene("Game");
-			
-			chenge = false;
+			RequestChangeScene("Title");
 		}
 	}
 
@@ -105,7 +102,7 @@ void GameSystem::Update()
 
 		if (GetAsyncKeyState(VK_TAB))
 		{
-			RequestChangeScene("Select");
+			RequestChangeScene("Title");
 		}
 	}
 
@@ -114,7 +111,6 @@ void GameSystem::Update()
 		if (chenge)
 		{
 			RequestChangeScene("Title");
-			chenge = false;
 		}
 	}
 
@@ -173,6 +169,7 @@ void GameSystem::RequestChangeScene(const std::string& name)
 {
 	m_isRepuestChangeScene = true;
 	m_nextSceneName = name;
+	chenge = false;
 }
 
 const std::shared_ptr<KdCamera> GameSystem::GetCamera() const
@@ -286,6 +283,7 @@ void GameSystem::InitGame()
 	//プレイヤーオブジェクトのインスタンス化
 	std::shared_ptr<player> spPlayer = std::make_shared<player>();
 	spPlayer->Init();
+	spPlayer->SetBel(m_setBil);
 	AddObject(spPlayer);
 	
 	for (enemyNum = 0; enemyNum < level * 15; enemyNum++)

@@ -195,8 +195,16 @@ void player::ShotArrow()
 			{
 				if (spObject->GetClassID() != GameObject::eEnemy) { continue; }
 
+				if (m_nowBil == "homing")
+				{
 					pArrow->SetTarget(spObject);
 					break;
+				}
+				else
+				{
+					pArrow->SetTarget(nullptr);
+					break;
+				}
 			}
 
 			////モデルからノードを探す

@@ -1,7 +1,9 @@
 ﻿#pragma once
 #include"../gameObject/GameObject.h"
 
-enum Menu
+class player;
+
+enum Menu //メニュー
 {
 	menu,
 	ready,
@@ -29,10 +31,12 @@ public:
 
 	void LevelSelect();
 	void UpdateMenu();
+	void UpdateBel();
+	void Upgrade();
 
 private:
-	Menu select;
-	Menu cursor;
+	Menu select; //メニューの切り替え
+	Menu cursor; //
 
 	void Release();
 
@@ -51,8 +55,24 @@ private:
 	Math::Rectangle rCor;
 	float cPosY;
 
+	std::shared_ptr<KdTexture> m_TFrame;
+	Math::Rectangle rFrame;
+
+	std::shared_ptr<KdTexture> m_TChange;
+	Math::Rectangle rChange;
+
+	std::shared_ptr<KdTexture> m_TUpgrade;
+	Math::Rectangle rUpgrade;
+
+	std::shared_ptr<KdTexture> m_THom;
+	Math::Rectangle rHom;
+
+	std::string txt = "";
+
 	int lev = 1;
 	bool flg = false;
+
+	bool changeLevel = false;
 
 	Math::Vector2 nowPos;
 

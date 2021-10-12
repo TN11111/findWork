@@ -32,6 +32,8 @@ public:
 
 	void enemyHit() { enemyNum--; }
 
+	void SetBuild(std::string tex) { m_setBil = tex; }
+
 	static const float s_worlGravity;
 private:
 	void Release(); // 解放
@@ -62,9 +64,13 @@ private:
 	std::string m_nextSceneName = "";
 	std::string m_nowScene = "";
 
+
+	std::string m_setBil = "";
+
+
 	bool m_isRepuestChangeScene = false;
 
-	bool flg = false;
+
 
 	bool button = false;
 	bool chenge = false;

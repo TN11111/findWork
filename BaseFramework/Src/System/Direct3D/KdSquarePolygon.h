@@ -36,7 +36,7 @@ public:
 	// アニメーションの再生が終わった？
 	bool IsAnimationEnd();
 
-	void GetAnimationSize() { (m_animSplitX* m_animSplitY); }
+	void GetAnimationSize() { (m_animSplitX * m_animSplitY); }
 
 private:
 

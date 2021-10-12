@@ -35,8 +35,6 @@ private:
 
 	bool m_isStop = false;
 
-	bool m_isHit = false;
-
 	Math::Vector3 m_prevPos = {};
 
 	KdTrailPolygon m_trail;
