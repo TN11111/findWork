@@ -63,3 +63,36 @@ bool GameObject::CheckCollisionBump(const RayInfo& info, BumpResult& result)
 	}
 		return result.m_isHit;
 }
+
+bool GameObject::CheakTexture(const std::shared_ptr<KdTexture> Tex,RayInfo& info, BumpResult& result)
+{
+	float mindist = FLT_MAX;
+
+	KdRayResult rayResult;
+
+	POINT mousePos;
+	GetCursorPos(&mousePos);
+
+	Math::Viewport vp;
+	D3D.GetViewport(vp);
+
+	Math::Vector2 nowPos(mousePos.x - (vp.width * 0.5f), (mousePos.y - (vp.height * 0.5f)));
+
+	Math::Vector3 cameraPos = GameInstance.GetCamera()->GetCameraMatrix().Translation();
+
+	Math::Vector3 localNearPos;
+	GameInstance.GetCamera()->ConvertScreenToWorld(nowPos, localNearPos);
+
+	RayInfo rayInfo(cameraPos, localNearPos - cameraPos, 1000);
+
+	if (rayResult.m_hit && rayResult.m_distance < mindist)
+	{
+		result.m_isHit = rayResult.m_hit;
+		result.m_pushVec = info.m_dir * (rayResult.m_distance - info.m_radius);
+
+		mindist = rayResult.m_distance;
+	}
+	return result.m_isHit;
+
+	return false;
+}

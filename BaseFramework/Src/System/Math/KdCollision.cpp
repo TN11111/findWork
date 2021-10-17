@@ -1,4 +1,5 @@
-﻿using namespace DirectX;
+﻿#include "KdCollision.h"
+using namespace DirectX;
 
 // 球 vs 球判定
 bool KdSphereToSphere(const DirectX::XMVECTOR& rPos1, const DirectX::XMVECTOR& rPos2,

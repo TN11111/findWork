@@ -17,6 +17,7 @@ struct KdRayResult
 bool KdSphereToSphere(const DirectX::XMVECTOR& rPos1, const DirectX::XMVECTOR& rPos2, float radius1,
 	float radius2, KdSphereResult* pResult = nullptr);
 
+
 // レイ vs メッシュ判定 : 判定結果だけで良い場合はリザルトにnullptrを渡しておく
 bool KdRayToMesh(const DirectX::XMVECTOR& rRayPos, const DirectX::XMVECTOR& rRayDir, float maxDistance,
 	const KdMesh& rMesh, const DirectX::XMMATRIX& rMatrix, KdRayResult* pResult = nullptr);

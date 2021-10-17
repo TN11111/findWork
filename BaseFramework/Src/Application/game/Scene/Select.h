@@ -27,7 +27,19 @@ public:
 
 	void MouseMove();
 
-	bool MouseToTexture(std::shared_ptr<KdTexture> Tex, Math::Vector2 Pos,Math::Vector2 Mouse);
+	bool MouseToTexture(std::shared_ptr<KdTexture> Tex, Math::Vector2 Pos,Math::Vector3 Mouse);
+
+	void click( bool flg) 
+	{
+		if (GetAsyncKeyState(VK_LBUTTON))
+		{
+			if (!flg) { flg = true; }
+		}
+		else
+		{
+			flg = false;
+		}
+	}
 
 	void LevelSelect();
 	void UpdateMenu();
@@ -70,11 +82,13 @@ private:
 	std::string txt = "";
 
 	int lev = 1;
-	bool flg = false;
+	bool menuChange = false;
 
 	bool changeLevel = false;
 
 	Math::Vector2 nowPos;
+
+	Math::Vector3 localNearPos;
 
 	Math::Rectangle rect;
 

@@ -37,7 +37,7 @@ void GameSystem::Update()
 		SetCursorPos(FPSCamera::s_fixMousePos.x, FPSCamera::s_fixMousePos.y);
 	}
 
-	if (GetAsyncKeyState(VK_LBUTTON)){
+	if (GetAsyncKeyState(VK_SPACE)){
 		if (!button)
 		{
 			button = true;

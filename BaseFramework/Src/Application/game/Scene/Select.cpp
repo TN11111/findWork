@@ -37,6 +37,8 @@ void Select::Init()
 
 void Select::Update()
 {
+	MouseMove();
+
 	switch (select)
 	{
 	case menu:
@@ -122,23 +124,31 @@ void Select::MouseMove()
 	POINT mousePos;
 	GetCursorPos(&mousePos);
 
-	POINT mouseMove;
-	mouseMove.x = mousePos.x;
-	mouseMove.y = mousePos.y;
+	Math::Viewport vp;
+	D3D.GetViewport(vp);
 
-	nowPos = { (float)mouseMove.x ,(float)mouseMove.y };
+	Math::Vector2 nowPos(mousePos.x - (vp.width * 0.5f), (mousePos.y - (vp.height * 0.5f)));
+
+	Math::Vector3 cameraPos = GameInstance.GetCamera()->GetCameraMatrix().Translation();
+
+	GameInstance.GetCamera()->ConvertScreenToWorld(nowPos, localNearPos);
+
+
 }
 
-bool Select::MouseToTexture(std::shared_ptr<KdTexture> Tex,Math::Vector2 Pos, Math::Vector2 Mouse)
+bool Select::MouseToTexture(std::shared_ptr<KdTexture> Tex,Math::Vector2 Pos, Math::Vector3 Mouse)
 {
-	float posY = Mouse.y - Pos.y;
-	float posX = Mouse.x - Pos.x;
+	Math::Vector3 texPos;
+	GameInstance.GetCamera()->ConvertScreenToWorld(Pos, texPos);
 
-	float H = (float)Tex.get()->GetHeight();
-	float W = (float)Tex.get()->GetWidth();
+	float posY = -Mouse.y - (texPos.y -120);
+	float posX = Mouse.x - texPos.x;
+
+	float H = (float)Tex.get()->GetHeight()/1.3;
+	float W = (float)Tex.get()->GetWidth()/1.3;
 
 
-	if (posX <= W || posY <= H || posX >= -W || posY >= -H)
+	if (posY <= H && posY >= -H && posX >= -W && posX <= W )
 	{
 		return true;
 	}
@@ -148,6 +158,7 @@ bool Select::MouseToTexture(std::shared_ptr<KdTexture> Tex,Math::Vector2 Pos, Ma
 
 void Select::LevelSelect()
 {
+
 	if (GetAsyncKeyState(VK_RIGHT))
 	{
 		if (changeLevel)
@@ -168,77 +179,65 @@ void Select::LevelSelect()
 	}
 	else { changeLevel = true; }
 
-	if (GetAsyncKeyState(VK_LBUTTON))
-	{
-		if (flg) { GameInstance.RequestChangeScene("Game"); }
 
-		flg = false;
+	if (menuChange) 
+	{
+		GameInstance.RequestChangeScene("Game"); 
+
+		menuChange = false;
 	}
-	else { flg = true; }
 
 	if (GetAsyncKeyState(VK_RBUTTON))
 	{
-		if (flg)
+		if (menuChange)
 		{
 			select = menu;
 		}
-		flg = false;
 	}
-	else { flg = true; }
 
 }
 
 void Select::UpdateMenu()
 {
+	bool menu = false;
+
+	click(menu);
 
 	switch (cursor)
 	{
 	case ready:
 		cPosY = -100;
-		if (GetAsyncKeyState(VK_SPACE))
+			
+		if (MouseToTexture(m_TBel, Math::Vector2{ -400,-250 }, localNearPos))
 		{
-			if (flg)
-			{	
-				select = ready;
-			}
-			flg = false;
+			cursor = belonging;
 		}
-		else { flg = true; }
 
-		if (GetAsyncKeyState(VK_DOWN))
+		if (MouseToTexture(m_TReady, Math::Vector2{ -400,-100 }, localNearPos))
 		{
-			if (flg)
-			{	
-				cursor = belonging;
+			if (menu)
+			{
+				select = ready;	
 			}
-			flg = false;
 		}
-		else { flg = true; }
-		
+
 		break;
 
 	case belonging:
 		cPosY = -250;
 
-		if (GetAsyncKeyState(VK_SPACE))
+		if (MouseToTexture(m_TReady, Math::Vector2{ -400,-100 }, localNearPos))
 		{
-			if (flg)
-			{	
+			cursor = ready;
+		}
+
+		if (MouseToTexture(m_TBel, Math::Vector2{ -400,-250 }, localNearPos))
+		{
+			if (menu)
+			{
 				select = belonging;
 			}
-			flg = false;
 		}
-		else { flg = true; }
-
-		if (GetAsyncKeyState(VK_UP))
-		{
-			if (flg)
-			{
-				cursor = ready;
-			}
-			flg = false;
-		}
-		else { flg = true; }
 		break;
 	default:
 		break;
@@ -247,29 +246,33 @@ void Select::UpdateMenu()
 
 void Select::UpdateBel()
 {
+	bool bel;
+	click(bel);
+
 	switch (cursor)
 	{
 	case belonging:
 		cPosY = -100;
-		if (GetAsyncKeyState(VK_RBUTTON))
+
+		if (MouseToTexture(m_TUpgrade, Math::Vector2{ -400,-250 }, localNearPos))
 		{
-			if (flg)
+			cursor = upgrade;
+		}
+
+		if (MouseToTexture(m_TChange, Math::Vector2{ -400,-100 }, localNearPos))
+		{
+			if (bel)
 			{
 				select = menu;
 			}
-			flg = false;
 		}
-		else { flg = true; }
-
-		if (GetAsyncKeyState(VK_DOWN))
+		if (GetAsyncKeyState(VK_RBUTTON))
 		{
-			if (flg)
+			if (bel)
 			{
-				cursor = upgrade;
+				select = menu;
 			}
-			flg = false;
 		}
-		else { flg = true; }
 		
 		break;
 
@@ -277,33 +280,24 @@ void Select::UpdateBel()
 		cPosY = -250;
 		if (GetAsyncKeyState(VK_RBUTTON))
 		{
-			if (flg)
+			if (bel)
 			{
 				select = menu;
 			}
-			flg = false;
 		}
-		else { flg = true; }
 
-		if (GetAsyncKeyState(VK_UP))
+		if (MouseToTexture(m_TChange, Math::Vector2{ -400,-100 }, localNearPos))
 		{
-			if (flg)
-			{
-				cursor = belonging;
-			}
-			flg = false;
+			cursor = belonging;
 		}
-		else { flg = true; }
 
-		if (GetAsyncKeyState(VK_SPACE))
+		if (MouseToTexture(m_TUpgrade, Math::Vector2{ -400,-250 }, localNearPos))
 		{
-			if (flg)
+			if (bel)
 			{
 				select = upgrade;
 			}
-			flg = false;
 		}
-		else { flg = true; }
 		
 		break;
 	default:
@@ -313,21 +307,26 @@ void Select::UpdateBel()
 
 void Select::Upgrade()
 {
+	bool grade = false;
+	click(grade);
+
 	if (GetAsyncKeyState(VK_RBUTTON))
 	{
-		if (flg)
+		if (grade)
 		{
 			cursor = ready;
 			select = menu;
 		}
-		flg = false;
 	}
-	else { flg = true; }
+	else { menuChange = true; }
 
 	if (GetAsyncKeyState(VK_LBUTTON))
 	{
-		GameInstance.GetInstance().SetBuild("homing");
-		txt = "homing";
+		if (MouseToTexture(m_THom, Math::Vector2{ 400,250 }, localNearPos))
+		{
+			GameInstance.GetInstance().SetBuild("homing");
+			txt = "homing";
+		}
 	}
 
 	

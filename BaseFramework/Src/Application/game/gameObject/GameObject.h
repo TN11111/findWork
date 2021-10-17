@@ -76,6 +76,8 @@ public:
 	virtual bool CheckCollisionBump(const SphereInfo& info, BumpResult& result);
 	bool CheckCollisionBump(const RayInfo& info, BumpResult& result);
 
+	bool CheakTexture(const std::shared_ptr<KdTexture> Tex, RayInfo& info, BumpResult& result);
+
 	
 protected:
 	KdModelWork m_modelWork;
